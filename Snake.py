@@ -1,12 +1,13 @@
 import tkinter
 import random  
 
-ROWS = 250
-COLS = 250
+ROWS = 25
+COLS = 25
 TILE_SIZE = 10
 
 WINDOW_WIDTH = TILE_SIZE * COLS #25*25 = 625
-WINDOW_HEIGHT = TILE_SIZE * ROWS #25*25 = 625
+WINDOW_HEIGHT = TILE_SIZE * ROWS 
+# constructs a 625 x 625 pixel screen environment
 
 class Tile:
     def __init__(self, x, y):
@@ -22,7 +23,7 @@ canvas = tkinter.Canvas(window,
                         bg = "black", 
                         width = WINDOW_WIDTH, 
                         height = WINDOW_HEIGHT, 
-                        borderwidth = 0, 
+                        borderwidth = 0, # if you remove this, it will create a white border
                         highlightthickness = 0)
 canvas.pack()
 window.update()
@@ -39,16 +40,19 @@ window_y = int((screen_height/2) - (window_height/2))
 #format "(w)x(h)+(x)+(y)"
 window.geometry(f"{window_width}x{window_height}+{window_x}+{window_y}")
 
+# the math to cenrte the window to the centre of the screen
+
 #initialize game
 snake = Tile(TILE_SIZE * 5, 
              TILE_SIZE * 5) #single tile, snake's head
 food = Tile(TILE_SIZE * 10, 
-            TILE_SIZE * 10)
+            TILE_SIZE * 10) # same concept for food
 velocityX = 0
-velocityY = 0
+velocityY = 0   # both for speed in the change_direction
 snake_body = [] #multiple snake tiles
 game_over = False
 score = 0
+# all the default values
 
 #game loop
 def change_direction(e): #e = event
@@ -74,6 +78,8 @@ def change_direction(e): #e = event
     elif (e.keysym == "Right" and velocityX != -1):
         velocityX = 1
         velocityY = 0
+        
+    # The != conditions exist to prevent the snake to move backwards from the direction it faces. 
 
 
 def move():
@@ -84,11 +90,13 @@ def move():
     if (snake.x < 0 or snake.x >= WINDOW_WIDTH or snake.y < 0 or snake.y >= WINDOW_HEIGHT):
         game_over = True
         return
+    # game over if the snake collides against the borders
     
     for tile in snake_body:
         if (snake.x == tile.x and snake.y == tile.y):
             game_over = True
             return
+    # tiles represent its body where the snake is the head, therefore this is the condition for when the snake collides with its body
     
     #collision
     if (snake.x == food.x and snake.y == food.y): 
@@ -96,6 +104,7 @@ def move():
         food.x = random.randint(0, COLS-1) * TILE_SIZE
         food.y = random.randint(0, ROWS-1) * TILE_SIZE
         score += 1
+    # random.randint ensures the food is auto generated to any part of the space. 
 
     #update snake body
     for i in range(len(snake_body)-1, -1, -1):
@@ -150,6 +159,7 @@ def draw():
                            font = "Arial 10", 
                            text = f"Score: {score}", 
                            fill = "white")
+    # updates the score on the top of the created window or else the centre if game is over.
     
     window.after(100, draw) 
     #call draw again every 100ms (1/10 of a second) = 10 frames per second
